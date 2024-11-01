@@ -2,6 +2,14 @@ import requests
 import psycopg2
 from psycopg2 import sql
 
+# requisição à API
+# response = requests.get('https://apiv4.ordering.co/v400/en/demo/products')
+# data = response.json()
+
+# retornar resultado
+# resultado = data.get('result', [])
+# print(resultado)
+
 def insert_product(cursor, product):
     insert_query = sql.SQL(""" 
         INSERT INTO produtos (
@@ -84,7 +92,7 @@ def insert_product(cursor, product):
 
 def main():
     try:
-        # Conexão com o banco de dados
+        # conexão com o banco de dados
         conn = psycopg2.connect(
             host='localhost',
             database='products',
@@ -93,20 +101,19 @@ def main():
         )
         cursor = conn.cursor()
 
-        # Requisição à API
+        # requisição à API
         response = requests.get('https://apiv4.ordering.co/v400/en/demo/products')
-        data = response.json()  # Supondo que a resposta seja um JSON válido
+        data = response.json()
         print(data)
 
-        # Insere cada produto
-        for product in data['result']:  # Altere para 'result' para corresponder ao seu JSON
+        # insere cada produto
+        for product in data['result']:
             print(f"Inserindo produto: {product.get('name', 'Unknown')}")
             try:
                 insert_product(cursor, product)
             except Exception as e:
                 print(f"Erro ao inserir produto {product.get('name', 'Unknown')}: {e}")
 
-        # Commit e fechamento da conexão
         conn.commit()
 
     except Exception as e:
